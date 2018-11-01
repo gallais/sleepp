@@ -1,7 +1,7 @@
 module Main where
 
 import Control.Concurrent.Thread.Delay ( delay )
-import Control.Monad ( guard )
+import Control.Monad ( guard, join )
 
 import Data.Char ( isDigit )
 import Data.Foldable ( fold, forM_ )
@@ -97,19 +97,21 @@ diffTimeSpec a b = toms a - toms b where
 -------------------------------------------------------------------------------
 -- Main function
 
+loop :: Natural  -- Total amount of time to wait
+     -> TimeSpec -- Starting time
+     -> IO ()
+loop tot start = do
+  wd  <- getWidth
+  clk <- getTime Monotonic
+  let curr = unsafeNatural $ diffTimeSpec clk start
+  putStr $ "\r" ++ progress curr tot wd
+  if tot < curr then exitSuccess
+  else do
+    delay (10 * getNatural tot)
+    loop tot start
+
 main :: IO ()
 main = do
   -- Because we only @putStr@, we need to turn buffering off
   hSetBuffering stdout NoBuffering
-  -- Get prepared: get options and start time
-  tm    <- getOptions
-  start <- getTime Monotonic
-  -- We shouldn't need more than a hundred steps but just in case...
-  forM_ [0..200] $ \ i -> do
-    -- the size of the terminal may have changed since last time
-    wd  <- getWidth
-    clk <- getTime Monotonic
-    let curr = unsafeNatural $ diffTimeSpec clk start
-    if tm < curr then exitSuccess else do
-      putStr $ "\r" ++ progress curr tm wd
-      delay (10 * getNatural tm)
+  join $ loop <$> getOptions <*> getTime Monotonic
