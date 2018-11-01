@@ -105,10 +105,11 @@ loop tot start = do
   clk <- getTime Monotonic
   let curr = unsafeNatural $ diffTimeSpec clk start
   putStr $ "\r" ++ progress curr tot wd
-  if tot < curr then exitSuccess
-  else do
-    delay (10 * getNatural tot)
-    loop tot start
+  if tot < curr
+    then exitSuccess
+    else do
+      delay (10 * getNatural tot)
+      loop tot start
 
 main :: IO ()
 main = do
