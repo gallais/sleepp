@@ -1,11 +1,12 @@
 module Main where
 
 import Control.Concurrent.Thread.Delay ( delay )
-import Control.Monad ( guard, join )
+import Control.Monad ( guard, join, when )
 
 import Data.Char ( isDigit )
 import Data.Foldable ( fold, forM_ )
 import Data.List ( genericReplicate )
+import Data.Maybe ( isJust )
 import Data.Natural
 
 import System.Clock ( Clock(Monotonic), TimeSpec(..), getTime )
@@ -33,22 +34,37 @@ option str = modifier mod <*> readNatural n
   where (n, mod) = span isDigit str
 
 -- Options are summed to get the total length of time
-options :: [String] -> Maybe Natural
-options strs = fold <$> mapM option strs
+-- If we are about to fail because of an unrecognized option, we
+-- highlight it in red.
+options :: [String] -> Either String Natural
+options strs =
+  let mopts = option <$> strs in
+  case sequence mopts of
+    Just tm -> pure (fold tm)
+    Nothing -> Left $ unwords $ zipWith warn mopts strs
+
+  where warn mopt str = if isJust mopt then str
+                        else "\x1b[31m" ++ str ++ "\x1b[0m"
 
 getOptions :: IO Natural
 getOptions = do
   args <- getArgs
-  case guard (not $ null args) *> options args of
-    Just tm -> pure tm
-    Nothing -> do
-      putStrLn $ concat 
-               [ "Error: invalid options ("
-               , unwords args
+  when (null args) $ errorAndOut "empty option list"
+  case options args of
+    Right tm -> pure tm
+    Left str -> errorAndOut $ concat
+               [ "invalid options ("
+               , str
                , ")"
                ]
-      exitFailure
 
+-------------------------------------------------------------------------------
+-- Error
+
+errorAndOut :: String -> IO a
+errorAndOut str = do
+  putStrLn $ "\x1b[31mError\x1b[0m: " ++ str
+  exitFailure
 
 -------------------------------------------------------------------------------
 -- Measure the width of the terminal
