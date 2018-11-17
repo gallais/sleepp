@@ -74,9 +74,7 @@ getWidth = do
   msz <- size
   case msz of
     Just sz -> pure (width sz)
-    Nothing -> do
-      putStrLn "Error: this can only be called from a terminal"
-      exitFailure
+    Nothing -> errorAndOut "this can only be called from a terminal"
 
 -------------------------------------------------------------------------------
 -- Progress bar
