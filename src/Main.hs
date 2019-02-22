@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Concurrent.Thread.Delay ( delay )
+import Control.Applicative ( (<$>), pure, (<*>) )
 import Control.Monad ( guard, join, when )
 import Control.Concurrent.Async ( race_ )
 
