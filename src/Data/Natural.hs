@@ -8,7 +8,7 @@ module Data.Natural
 
 import Data.Function
 import Data.Semigroup ( Semigroup, (<>) )
-import Data.Monoid
+import Data.Monoid ( Monoid, mempty, mappend )
 
 newtype Natural = Natural { getNatural :: Integer }
   deriving (Show, Eq, Ord)
