@@ -25,6 +25,11 @@ executable sleepp
                , clock >=0.7 && <0.8
                , terminal-size >=0.3 && <0.4
                , unbounded-delays >=0.1 && <0.2
+
+  if impl(ghc < 8.0)
+    -- provide/emulate `Data.Semigroups` API for pre-GHC8
+    build-depends:  semigroups == 0.18.*
+
   hs-source-dirs:      src
   default-language:    Haskell98
   other-modules: Data.Natural
