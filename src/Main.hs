@@ -2,6 +2,7 @@ module Main where
 
 import Control.Concurrent.Thread.Delay ( delay )
 import Control.Monad ( guard, join, when )
+import Control.Concurrent.Async ( race_ )
 
 import Data.Char ( isDigit )
 import Data.Foldable ( fold, forM_ )
@@ -13,7 +14,7 @@ import System.Clock ( Clock(Monotonic), TimeSpec(..), getTime )
 import System.Console.Terminal.Size ( size, width )
 import System.Environment ( getArgs )
 import System.Exit ( exitSuccess, exitFailure )
-import System.IO ( hSetBuffering, stdout, BufferMode(NoBuffering) )
+import System.IO ( hSetBuffering, stdin, stdout, BufferMode(NoBuffering) )
 
 -------------------------------------------------------------------------------
 -- Parsing command line arguments
@@ -125,8 +126,24 @@ loop tot start = do
       delay (10 * getNatural tot)
       loop tot start
 
+sleeping :: IO ()
+sleeping = do
+  opts <- getOptions
+  time <- getTime Monotonic
+  loop opts time
+
+dying :: IO ()
+dying = do
+  c <- getChar
+  case c of
+    'q'    -> return ()
+    '\ESC' -> return ()
+    _ -> dying
+
 main :: IO ()
 main = do
-  -- Because we only @putStr@, we need to turn buffering off
+  -- Because we only @putStr@, we need to turn stdout buffering off
   hSetBuffering stdout NoBuffering
-  join $ loop <$> getOptions <*> getTime Monotonic
+  -- Because we read single characters, we need to turn stdin bufferin off
+  hSetBuffering stdin NoBuffering
+  race_ sleeping dying
