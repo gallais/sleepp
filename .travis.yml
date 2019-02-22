@@ -1,0 +1,58 @@
+language: c
+dist: trusty
+sudo: false
+
+matrix:
+  include:
+    - env: TEST=MAIN GHC_VER=8.6.3 BUILD=CABAL CABAL_VER=2.4
+      addons:
+        apt:
+          packages:
+            - cabal-install-2.4
+            - ghc-8.6.3
+          sources:
+            - hvr-ghc
+
+    - env: TEST=MAIN GHC_VER=8.4.4 BUILD=CABAL CABAL_VER=2.2
+      addons:
+        apt:
+          packages:
+            - cabal-install-2.2
+            - ghc-8.4.4
+          sources:
+            - hvr-ghc
+
+    - env: TEST=MAIN GHC_VER=8.2.2 BUILD=CABAL CABAL_VER=2.0
+      addons:
+        apt:
+          packages:
+            - cabal-install-2.0
+            - ghc-8.2.2
+          sources:
+            - hvr-ghc
+
+    - env: TEST=MAIN GHC_VER=8.0.2 BUILD=CABAL CABAL_VER=1.24
+      addons:
+        apt:
+          packages:
+            - cabal-install-1.24
+            - ghc-8.0.2
+          sources:
+            - hvr-ghc
+
+    - env: TEST=MAIN GHC_VER=7.10.3 BUILD=CABAL CABAL_VER=1.22
+      addons:
+        apt:
+          packages:
+            - cabal-install-1.22
+            - ghc-7.10.3
+          sources:
+            - hvr-ghc
+
+before_install:
+
+  - export PATH=/opt/ghc/$GHC_VER/bin:/opt/cabal/$CABAL_VER/bin:$PATH;
+  - sed -i 's/^jobs:/-- jobs:/' $HOME/.cabal/config
+
+install:
+  - cabal install
