@@ -57,3 +57,7 @@ before_install:
 
 install:
   - cabal install
+
+branches:
+  only:
+    - master
