@@ -24,6 +24,8 @@ readNatural str = case reads str of
   [(a, [])] -> mkNatural a
   _ -> Nothing
 
+instance Semigroup Natural where
+  m <> n = Natural $ ((+) `on` getNatural) m n
+
 instance Monoid Natural where
   mempty = Natural 0
-  mappend m n = Natural $ ((+) `on` getNatural) m n

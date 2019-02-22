@@ -20,7 +20,11 @@ executable sleepp
   main-is:             Main.hs
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.10 && <4.11, unbounded-delays >=0.1 && <0.2, clock >=0.7 && <0.8, terminal-size >=0.3 && <0.4
+  build-depends: async >= 2.2 && < 2.3
+               , base >=4.10 && <4.12
+               , clock >=0.7 && <0.8
+               , terminal-size >=0.3 && <0.4
+               , unbounded-delays >=0.1 && <0.2
   hs-source-dirs:      src
   default-language:    Haskell98
   other-modules: Data.Natural
