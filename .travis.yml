@@ -52,6 +52,7 @@ matrix:
 before_install:
 
   - export PATH=/opt/ghc/$GHC_VER/bin:/opt/cabal/$CABAL_VER/bin:$PATH;
+  - travis_retry cabal update
   - sed -i 's/^jobs:/-- jobs:/' $HOME/.cabal/config
 
 install:
