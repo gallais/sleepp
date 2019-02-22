@@ -7,6 +7,8 @@ module Data.Natural
        ) where
 
 import Data.Function
+import Data.Semigroup ( Semigroup, (<>) )
+import Data.Monoid ( Monoid, mempty, mappend )
 
 newtype Natural = Natural { getNatural :: Integer }
   deriving (Show, Eq, Ord)
@@ -29,3 +31,4 @@ instance Semigroup Natural where
 
 instance Monoid Natural where
   mempty = Natural 0
+  mappend = (<>)

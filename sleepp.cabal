@@ -13,6 +13,15 @@ maintainer:          guillaume.allais@ens-lyon.org
 -- copyright:
 category:            System
 build-type:          Simple
+
+tested-with:        GHC == 7.8.4
+                    GHC == 7.10.3
+                    GHC == 8.0.2
+                    GHC == 8.2.2
+                    GHC == 8.4.4
+                    GHC == 8.6.3
+
+
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
@@ -21,10 +30,15 @@ executable sleepp
   -- other-modules:
   -- other-extensions:
   build-depends: async >= 2.2 && < 2.3
-               , base >=4.10 && <4.12
+               , base >=4.7.0.2 && <4.13
                , clock >=0.7 && <0.8
                , terminal-size >=0.3 && <0.4
                , unbounded-delays >=0.1 && <0.2
+
+  if impl(ghc < 8.0)
+    -- provide/emulate `Data.Semigroups` API for pre-GHC8
+    build-depends:  semigroups == 0.18.*
+
   hs-source-dirs:      src
   default-language:    Haskell98
   other-modules: Data.Natural
